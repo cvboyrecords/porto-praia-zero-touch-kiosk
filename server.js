@@ -24,10 +24,20 @@ app.get('/tv', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tv.html'));
 });
 
-// Check-in com fuso horário estrito de Cabo Verde (Atlantic/Cape_Verde)
+// Check-in com fuso horário de Cabo Verde e normalização automática do número de WhatsApp
 app.post('/api/checkin', (req, res) => {
-  const { serviceCode, language, whatsapp } = req.body;
+  let { serviceCode, language, whatsapp } = req.body;
   
+  // Normalizar número de telemóvel (se vier sem indicativo de Cabo Verde, adiciona automaticamente o +238)
+  if (whatsapp) {
+    whatsapp = whatsapp.replace(/\D/g, ''); // Remove espaços e caracteres especiais
+    if (whatsapp.length >= 7 && whatsapp.length <= 8 && !whatsapp.startsWith('238')) {
+      whatsapp = '238' + whatsapp;
+    }
+  } else {
+    whatsapp = 'N/A';
+  }
+
   const dataCV = new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Cape_Verde' });
   const timestampCV = new Date(dataCV).toISOString();
   const senhaGerada = `${serviceCode}-${Math.floor(100 + Math.random() * 900)}`;
@@ -36,12 +46,12 @@ app.post('/api/checkin', (req, res) => {
     senha: senhaGerada,
     servico: serviceCode,
     lingua: language || 'cv',
-    whatsapp: whatsapp || 'N/A',
+    whatsapp: whatsapp,
     dataHora: timestampCV,
     estado: 'AGUARDANDO'
   });
 
-  res.json({ status: 'success', senha: senhaGerada, timestamp: timestampCV, fuso: 'Atlantic/Cape_Verde' });
+  res.json({ status: 'success', senha: senhaGerada, timestamp: timestampCV, whatsappFormatado: whatsapp });
 });
 
 app.post('/api/chamar', (req, res) => {
