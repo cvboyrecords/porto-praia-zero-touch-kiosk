@@ -4,11 +4,17 @@
   <meta charset="UTF-8">
   <title>Porto da Praia - Painel do Balcão</title>
   <style>
-    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; position: relative; }
-    .top-clock { position: absolute; top: 20px; right: 30px; color: #38bdf8; font-size: 1.2rem; font-weight: bold; background: #1e293b; padding: 10px 20px; border-radius: 12px; border: 2px solid #334155; }
-    .card { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; width: 450px; border: 2px solid #334155; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; }
+    .top-bar { position: absolute; top: 20px; right: 30px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .relogio-cv { color: #38bdf8; font-size: 1.1rem; font-weight: bold; background: #1e293b; padding: 10px 18px; border-radius: 12px; border: 2px solid #334155; }
+    .lang-selector { display: flex; gap: 6px; }
+    .lang-btn { background: #1e293b; border: 2px solid #334155; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: all 0.2s; }
+    .lang-btn.active, .lang-btn:hover { background: #0284c7; border-color: #38bdf8; }
+    .card { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 500px; border: 2px solid #334155; margin-top: 40px; }
     h1 { color: #38bdf8; margin-bottom: 20px; font-size: 1.8rem; }
-    select, button { width: 100%; padding: 15px; margin-top: 15px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: bold; }
+    label { display: block; margin-bottom: 8px; color: #94a3b8; font-size: 1rem; text-align: left; }
+    select, button { width: 100%; padding: 15px; margin-top: 10px; margin-bottom: 20px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: bold; }
     select { background: #0f172a; color: #fff; border: 2px solid #334155; }
     button { background: #10b981; color: white; cursor: pointer; transition: background 0.2s; }
     button:hover { background: #059669; }
@@ -16,25 +22,188 @@
   </style>
 </head>
 <body>
-  <div id="relogioBalcao" class="top-clock">🕒 A carregar...</div>
+  <div class="top-bar">
+    <div class="lang-selector">
+      <button class="lang-btn active" onclick="setLang('cv')">CV</button>
+      <button class="lang-btn" onclick="setLang('pt')">PT</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('ar')">AR</button>
+      <button class="lang-btn" onclick="setLang('zh')">ZH</button>
+    </div>
+    <div id="relogioBalcao" class="relogio-cv">🕒 A carregar...</div>
+  </div>
 
   <div class="card">
-    <h1>BALCÃO ENAPOR</h1>
-    <label>Selecione o seu Balcão:</label>
+    <h1 id="balcao-title">BALCÃO ENAPOR</h1>
+    <label id="lbl-select">Selecione o seu Balcão:</label>
     <select id="balcaoSelect">
-      <option value="Balcão 01">Balcão 01 - Prioritário (Mobilidade & Grávidas)</option>
-      <option value="Balcão 02">Balcão 02 - Carga & Encomendas</option>
-      <option value="Balcão 03">Balcão 03 - Passageiros & Bilhética</option>
-      <option value="Balcão 04">Balcão 04 - Taxas Portuárias</option>
-      <option value="Balcão 05">Balcão 05 - Passes & Credenciais</option>
-      <option value="Balcão 06">Balcão 06 - Alfândega & Despacho</option>
-      <option value="Balcão 07">Balcão 07 - VIP & Institucional</option>
+      <option value="Balcão 01" id="opt-1">Balcão 01 - Prioritário (Mobilidade & Grávidas)</option>
+      <option value="Balcão 02" id="opt-2">Balcão 02 - Carga & Encomendas</option>
+      <option value="Balcão 03" id="opt-3">Balcão 03 - Passageiros & Bilhética</option>
+      <option value="Balcão 04" id="opt-4">Balcão 04 - Taxas Portuárias</option>
+      <option value="Balcão 05" id="opt-5">Balcão 05 - Passes & Credenciais</option>
+      <option value="Balcão 06" id="opt-6">Balcão 06 - Alfândega & Despacho</option>
+      <option value="Balcão 07" id="opt-7">Balcão 07 - VIP & Institucional</option>
     </select>
-    <button onclick="chamarProximo()">CHAMAR PRÓXIMO CIDADÃO</button>
+    <button id="btn-chamar" onclick="chamarProximo()">CHAMAR PRÓXIMO CIDADÃO</button>
     <div id="resultado">Aguardando ação...</div>
   </div>
 
   <script>
+    const i18nBalcao = {
+      cv: {
+        title: "BALKÃO ENAPOR",
+        lblSelect: "Disbulta bu Balkão:",
+        btnChamar: "TCHAMA PRÓXIMU CIDADÃO",
+        waiting: "Na spera di ason...",
+        called: "Tchamado",
+        to: "pa",
+        opts: [
+          "Balkão 01 - Prioritáriu (Mobilidade & Gravidas)",
+          "Balkão 02 - Karga & Encomendas",
+          "Balkão 03 - Passageirus & Bilhétika",
+          "Balkão 04 - Tasas Portuárias",
+          "Balkão 05 - Passes & Kredenciais",
+          "Balkão 06 - Alfândega & Dispaxu",
+          "Balkão 07 - VIP & Institusional"
+        ]
+      },
+      pt: {
+        title: "BALCÃO ENAPOR",
+        lblSelect: "Selecione o seu Balcão:",
+        btnChamar: "CHAMAR PRÓXIMO CIDADÃO",
+        waiting: "Aguardando ação...",
+        called: "Chamado",
+        to: "para",
+        opts: [
+          "Balcão 01 - Prioritário (Mobilidade & Grávidas)",
+          "Balcão 02 - Carga & Encomendas",
+          "Balcão 03 - Passageiros & Bilhética",
+          "Balcão 04 - Taxas Portuárias",
+          "Balcão 05 - Passes & Credenciais",
+          "Balcão 06 - Alfândega & Despacho",
+          "Balcão 07 - VIP & Institucional"
+        ]
+      },
+      en: {
+        title: "ENAPOR COUNTER",
+        lblSelect: "Select your Counter:",
+        btnChamar: "CALL NEXT CITIZEN",
+        waiting: "Waiting for action...",
+        called: "Called",
+        to: "to",
+        opts: [
+          "Counter 01 - Priority (Accessibility & Pregnant)",
+          "Counter 02 - Cargo & Parcels",
+          "Counter 03 - Passengers & Ticketing",
+          "Counter 04 - Port Fees",
+          "Counter 05 - Passes & Badges",
+          "Counter 06 - Customs Clearance",
+          "Counter 07 - VIP & Institutional"
+        ]
+      },
+      fr: {
+        title: "GUICHET ENAPOR",
+        lblSelect: "Sélectionnez votre Guichet:",
+        btnChamar: "APPELER LE CITOYEN SUIVANT",
+        waiting: "En attente d'action...",
+        called: "Appelé",
+        to: "au",
+        opts: [
+          "Guichet 01 - Prioritaire (Mobilité & Enceintes)",
+          "Guichet 02 - Fret & Colis",
+          "Guichet 03 - Passagers & Billetterie",
+          "Guichet 04 - Taxes Portuaires",
+          "Guichet 05 - Badges & Passes",
+          "Guichet 06 - Dédouanement",
+          "Guichet 07 - Service VIP & Institutionnel"
+        ]
+      },
+      es: {
+        title: "VENTANILLA ENAPOR",
+        lblSelect: "Seleccione su Ventanilla:",
+        btnChamar: "LLAMAR AL SIGUIENTE CIUDADANO",
+        waiting: "Esperando acción...",
+        called: "Llamado",
+        to: "para",
+        opts: [
+          "Ventanilla 01 - Prioritario (Movilidad & Embarazadas)",
+          "Ventanilla 02 - Carga y Encomiendas",
+          "Ventanilla 03 - Pasajeros y Boletos",
+          "Ventanilla 04 - Tasas Portuarias",
+          "Ventanilla 05 - Pases y Credenciales",
+          "Ventanilla 06 - Aduana y Despacho",
+          "Ventanilla 07 - Atención VIP e Institucional"
+        ]
+      },
+      ar: {
+        title: "نافذة إينابور",
+        lblSelect: "اختر النافذة الخاصة بك:",
+        btnChamar: "استدعاء المواطن التالي",
+        waiting: "في انتظار الإجراء...",
+        called: "تم استدعاء",
+        to: "إلى",
+        opts: [
+          "النافذة 01 - أولوية خاصة (ذوي الاحتياجات والحوامل)",
+          "النافذة 02 - الشحن والبضائع",
+          "النافذة 03 - الركاب والتذاكر",
+          "النافذة 04 - الرسوم المينائية",
+          "النافذة 05 - التصاريح والبطاقات",
+          "النافذة 06 - التخليص الجمركي",
+          "النافذة 07 - خدمة كبار الشخصيات"
+        ],
+        rtl: true
+      },
+      zh: {
+        title: "ENAPOR 柜台",
+        lblSelect: "选择您的柜台：",
+        btnChamar: "呼叫下一位公民",
+        waiting: "等待操作...",
+        called: "已呼叫",
+        to: "前往",
+        opts: [
+          "01号柜台 - 优先通道（老幼病残孕）",
+          "02号柜台 - 货物与包裹",
+          "03号柜台 - 旅客与售票",
+          "04号柜台 - 港口费",
+          "05号柜台 - 通行证与证件",
+          "06号柜台 - 海关清关",
+          "07号柜台 - VIP 与机构服务"
+        ]
+      }
+    };
+
+    let ultimaSenhaChamadaInfo = { senha: '---', balcao: '---' };
+
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      const t = i18nBalcao[lang] || i18nBalcao['pt'];
+      document.getElementById('balcao-title').innerText = t.title;
+      document.getElementById('lbl-select').innerText = t.lblSelect;
+      document.getElementById('btn-chamar').innerText = t.btnChamar;
+      document.getElementById('resultado').innerText = t.waiting;
+
+      const select = document.getElementById('balcaoSelect');
+      for (let i = 0; i < t.opts.length; i++) {
+        select.options[i].text = t.opts[i];
+      }
+
+      if (t.rtl) {
+        document.body.style.direction = 'rtl';
+        document.body.style.fontFamily = "'Amiri', 'Segoe UI', Tahoma, sans-serif";
+      } else if (lang === 'zh') {
+        document.body.style.direction = 'ltr';
+        document.body.style.fontFamily = "'Microsoft YaHei', sans-serif";
+      } else {
+        document.body.style.direction = 'ltr';
+        document.body.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+      }
+    }
+
     function atualizarRelogioBalcao() {
       const options = { timeZone: 'Atlantic/Cape_Verde', dateStyle: 'short', timeStyle: 'medium' };
       const formatter = new Intl.DateTimeFormat('pt-CV', options);
