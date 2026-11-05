@@ -57,7 +57,7 @@ app.post('/api/chamar', (req, res) => {
     };
     res.json({ status: 'success', chamado: ultimaChamada });
   } else {
-    res.json({ status: 'empty', message: 'Nenhum cidadão em espera.' });
+    res.json({ status: 'empty', message: 'Nenhum cidadão em espera na fila.' });
   }
 });
 
@@ -66,5 +66,5 @@ app.get('/api/estado-tv', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[PORTO DA PRAIA] Servidor unificado ativo na porta ${PORT} (Fuso: Atlantic/Cape_Verde)`);
+  console.log(`[PORTO DA PRAIA] Servidor unificado ativo na porta ${PORT}`);
 });
