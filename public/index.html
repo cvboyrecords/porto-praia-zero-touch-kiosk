@@ -10,6 +10,7 @@
     header { text-align: center; margin-bottom: 15px; width: 100%; max-width: 950px; cursor: pointer; user-select: none; }
     header h1 { color: #38bdf8; font-size: clamp(1.5rem, 4vw, 2.2rem); }
     header p { color: #94a3b8; font-size: clamp(0.9rem, 2vw, 1.1rem); }
+    .relogio-cv { color: #10b981; font-size: 0.95rem; font-weight: bold; margin-top: 5px; }
     .lang-selector { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; width: 100%; max-width: 950px; }
     .lang-btn { background: #1e293b; border: 2px solid #334155; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: all 0.2s; }
     .lang-btn.active, .lang-btn:hover { background: #0284c7; border-color: #38bdf8; }
@@ -30,10 +31,10 @@
   </style>
 </head>
 <body>
-  <!-- Atalho secreto: Clicar 5 vezes no header abre o acesso admin para o chefe -->
   <header onclick="triggerAdminSecret()">
     <h1 id="title-main">PORTO DA PRAIA - ENAPOR</h1>
     <p id="subtitle-main">Atendimento Quiosque Zero Touch</p>
+    <div id="relogio" class="relogio-cv">A carregar data e hora...</div>
   </header>
 
   <div class="lang-selector">
@@ -78,6 +79,14 @@
     let adminClicks = 0;
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('canvas');
+
+    function atualizarRelogioCV() {
+      const options = { timeZone: 'Atlantic/Cape_Verde', dateStyle: 'full', timeStyle: 'medium' };
+      const formatter = new Intl.DateTimeFormat('pt-CV', options);
+      document.getElementById('relogio').innerText = `🕒 ${formatter.format(new Date())}`;
+    }
+    setInterval(atualizarRelogioCV, 1000);
+    atualizarRelogioCV();
 
     const i18n = {
       cv: {
@@ -139,7 +148,7 @@
         secService: "1. 选择港口服务",
         srvPrt: "♿ 优先通道（老幼病残孕）", srvEnc: "📦 货物与包裹",
         srvPax: "🚢 旅客与售票", srvTax: "💳 港口费",
-        srvPas: "🎫 通行证与证件", srvAlf: "🛃 海关清관",
+        srvPas: "🎫 通行证与证件", srvAlf: "🛃 海关清关",
         srvVIP: "⭐ VIP 与机构服务", secDoc: "2. 请出示身份证 / 护照",
         lblWp: "接收号码的 WhatsApp 电话：", btnSub: "生成零接触凭证"
       }
@@ -192,7 +201,7 @@
           alert("PIN Incorreto!");
         }
       }
-      setTimeout(() => { adminClicks = 0; }, 3000); // Reseta se demorar
+      setTimeout(() => { adminClicks = 0; }, 3000);
     }
 
     async function processCheckin() {
@@ -210,7 +219,7 @@
           body: JSON.stringify(payload)
         });
         const data = await res.json();
-        alert(`Senha emitida com sucesso: ${data.senha}! Verifique o WhatsApp.`);
+        alert(`Senha emitida com sucesso: ${data.senha}! Fuso Horário: Cabo Verde. Verifique o WhatsApp.`);
       } catch (err) {
         alert('Erro ao processar senha no quiosque.');
       }

@@ -6,6 +6,7 @@
   <title>Porto da Praia - Sala de Espera (TV)</title>
   <style>
     body { background: #020617; color: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+    .top-clock { position: absolute; top: 20px; right: 30px; color: #38bdf8; font-size: 1.5rem; font-weight: bold; background: #0f172a; padding: 10px 20px; border-radius: 12px; border: 2px solid #334155; }
     .container { text-align: center; border: 4px solid #38bdf8; padding: 50px; border-radius: 24px; background: #0f172a; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); width: 85%; max-width: 950px; }
     h2 { color: #94a3b8; font-size: clamp(1.8rem, 4vw, 2.8rem); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; }
     #senhaAtual { font-size: clamp(5rem, 15vw, 9rem); font-weight: 900; color: #38bdf8; margin: 20px 0; text-shadow: 0 0 25px rgba(56,189,248,0.5); }
@@ -14,6 +15,8 @@
   </style>
 </head>
 <body>
+  <div id="relogioTV" class="top-clock">🕒 A carregar...</div>
+
   <div class="container">
     <h2 id="tv-title">SENHA EM ATENDIMENTO</h2>
     <div id="senhaAtual">---</div>
@@ -23,6 +26,14 @@
 
   <script>
     let ultimaSenhaRegistada = '';
+
+    function atualizarRelogioTV() {
+      const options = { timeZone: 'Atlantic/Cape_Verde', dateStyle: 'short', timeStyle: 'medium' };
+      const formatter = new Intl.DateTimeFormat('pt-CV', options);
+      document.getElementById('relogioTV').innerText = `🕒 ${formatter.format(new Date())}`;
+    }
+    setInterval(atualizarRelogioTV, 1000);
+    atualizarRelogioTV();
 
     const i18nTV = {
       cv: { title: "SENHA NA ATENDIMENTU", footer: "ENAPOR - Portu Internacional di Praia" },
