@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>Porto da Praia - Painel do Balcão</title>
   <style>
-    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; position: relative; }
+    .top-clock { position: absolute; top: 20px; right: 30px; color: #38bdf8; font-size: 1.2rem; font-weight: bold; background: #1e293b; padding: 10px 20px; border-radius: 12px; border: 2px solid #334155; }
     .card { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; width: 450px; border: 2px solid #334155; }
     h1 { color: #38bdf8; margin-bottom: 20px; font-size: 1.8rem; }
     select, button { width: 100%; padding: 15px; margin-top: 15px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: bold; }
@@ -15,6 +16,8 @@
   </style>
 </head>
 <body>
+  <div id="relogioBalcao" class="top-clock">🕒 A carregar...</div>
+
   <div class="card">
     <h1>BALCÃO ENAPOR</h1>
     <label>Selecione o seu Balcão:</label>
@@ -30,7 +33,16 @@
     <button onclick="chamarProximo()">CHAMAR PRÓXIMO CIDADÃO</button>
     <div id="resultado">Aguardando ação...</div>
   </div>
+
   <script>
+    function atualizarRelogioBalcao() {
+      const options = { timeZone: 'Atlantic/Cape_Verde', dateStyle: 'short', timeStyle: 'medium' };
+      const formatter = new Intl.DateTimeFormat('pt-CV', options);
+      document.getElementById('relogioBalcao').innerText = `🕒 ${formatter.format(new Date())}`;
+    }
+    setInterval(atualizarRelogioBalcao, 1000);
+    atualizarRelogioBalcao();
+
     async function chamarProximo() {
       const balcao = document.getElementById('balcaoSelect').value;
       try {
