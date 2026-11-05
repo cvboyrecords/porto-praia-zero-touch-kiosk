@@ -18,6 +18,8 @@
     .grid-services { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 25px; }
     .service-card { background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 1rem; font-weight: 600; }
     .service-card:hover, .service-card.selected { border-color: #38bdf8; background: #0369a1; }
+    .service-card.priority { border-color: #f59e0b; background: #451a03; color: #fde68a; }
+    .service-card.priority:hover, .service-card.priority.selected { background: #78350f; border-color: #fbbf24; }
     .camera-box { text-align: center; margin-bottom: 25px; }
     video { width: 100%; max-width: 480px; height: 250px; background: #000; border-radius: 12px; border: 2px solid #334155; object-fit: cover; }
     .input-group { margin-bottom: 25px; }
@@ -49,13 +51,13 @@
   <div class="container">
     <div class="section-title" id="sec-service">1. Selecione o Serviço Portuário</div>
     <div class="grid-services">
-      <div class="service-card selected" onclick="selectService(this, 'ENC')" id="srv-enc">📦 Carga & Encomendas</div>
+      <div class="service-card priority selected" onclick="selectService(this, 'PRT')" id="srv-prt">♿ Prioritário (Mobilidade, Grávidas & Bebés)</div>
+      <div class="service-card" onclick="selectService(this, 'ENC')" id="srv-enc">📦 Carga & Encomendas</div>
       <div class="service-card" onclick="selectService(this, 'PAX')" id="srv-pax">🚢 Passageiros & Bilhética</div>
       <div class="service-card" onclick="selectService(this, 'TAX')" id="srv-tax">💳 Taxas Portuárias</div>
       <div class="service-card" onclick="selectService(this, 'PAS')" id="srv-pas">🎫 Passes & Credenciais</div>
       <div class="service-card" onclick="selectService(this, 'ALF')" id="srv-alf">🛃 Alfândega & Despacho</div>
-      <div class="service-card" onclick="selectService(this, 'MAR')" id="srv-mar">⚓ Capitania & Marinha</div>
-      <div class="service-card" onclick="selectService(this, 'VIP')" id="srv-vip">⭐ Atendimento VIP / Sénior</div>
+      <div class="service-card" onclick="selectService(this, 'VIP')" id="srv-vip">⭐ Atendimento VIP & Institucional</div>
     </div>
 
     <div class="section-title" id="sec-doc">2. Aproxime o CNI / Passaporte / QR Code</div>
@@ -72,13 +74,13 @@
     <button class="submit-btn" id="btn-submit" onclick="processCheckin()">EMITIR SENHA ZERO TOUCH</button>
 
     <div class="secret-admin">
-      <button onclick="acessoAdmin()">🔐 Acesso Administrativo Restrito</button>
+      <button onclick="acessoAdmin()">🔐 Acesso Administrativo Restrito (PIN: 2026)</button>
     </div>
   </div>
 
   <script>
     let currentLang = 'cv';
-    let selectedServiceCode = 'ENC';
+    let selectedServiceCode = 'PRT';
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('canvas');
 
@@ -87,13 +89,13 @@
         title: "PORTO DA PRAIA - ENAPOR",
         subtitle: "Atendimentu Kiosku Zero Touch",
         secService: "1. Disbulta Servisu Portuáriu",
+        srvPrt: "♿ Prioritáriu (Mobilidade, Gravidas & Bebés)",
         srvEnc: "📦 Karga & Encomendas",
         srvPax: "🚢 Passageirus & Bilhétika",
         srvTax: "💳 Tasas Portuárias",
         srvPas: "🎫 Passes & Kredenciais",
         srvAlf: "🛃 Alfândega & Dispaxu",
-        srvMar: "⚓ Kapitania & Marinha",
-        srvVIP: "⭐ Atendimentu VIP / Sénior",
+        srvVIP: "⭐ Atendimentu VIP & Institusional",
         secDoc: "2. Aproxima CNI / Passaporti / QR Code",
         lblWp: "Número di WhatsApp pa Resebi Senha:",
         btnSub: "EMITIR SENHA ZERO TOUCH"
@@ -102,13 +104,13 @@
         title: "PORTO DA PRAIA - ENAPOR",
         subtitle: "Atendimento Quiosque Zero Touch",
         secService: "1. Selecione o Serviço Portuário",
+        srvPrt: "♿ Prioritário (Mobilidade, Grávidas & Bebés)",
         srvEnc: "📦 Carga & Encomendas",
         srvPax: "🚢 Passageiros & Bilhética",
         srvTax: "💳 Taxas Portuárias",
         srvPas: "🎫 Passes & Credenciais",
         srvAlf: "🛃 Alfândega & Despacho",
-        srvMar: "⚓ Capitania & Marinha",
-        srvVIP: "⭐ Atendimento VIP / Sénior",
+        srvVIP: "⭐ Atendimento VIP & Institucional",
         secDoc: "2. Aproxime o CNI / Passaporte / QR Code",
         lblWp: "Número do WhatsApp para Receber a Senha:",
         btnSub: "EMITIR SENHA ZERO TOUCH"
@@ -117,13 +119,13 @@
         title: "PORT OF PRAIA - ENAPOR",
         subtitle: "Zero Touch Kiosk Service",
         secService: "1. Select Port Service",
+        srvPrt: "♿ Priority (Accessibility, Pregnant & Infants)",
         srvEnc: "📦 Cargo & Parcels",
         srvPax: "🚢 Passengers & Ticketing",
         srvTax: "💳 Port Fees",
         srvPas: "🎫 Passes & Badges",
         srvAlf: "🛃 Customs Clearance",
-        srvMar: "⚓ Harbor Master & Marine",
-        srvVIP: "⭐ VIP & Senior Service",
+        srvVIP: "⭐ VIP & Institutional Service",
         secDoc: "2. Scan ID / Passport / QR Code",
         lblWp: "WhatsApp Number to Receive Ticket:",
         btnSub: "ISSUE ZERO TOUCH TICKET"
@@ -132,13 +134,13 @@
         title: "PORT DE PRAIA - ENAPOR",
         subtitle: "Guichet Zero Touch",
         secService: "1. Sélectionnez le Service Portuaire",
+        srvPrt: "♿ Prioritaire (Mobilité, Enceintes & Bébés)",
         srvEnc: "📦 Fret & Colis",
         srvPax: "🚢 Passagers & Billetterie",
         srvTax: "💳 Taxes Portuaires",
         srvPas: "🎫 Badges & Passes",
         srvAlf: "🛃 Dédouanement",
-        srvMar: "⚓ Capitainerie & Marine",
-        srvVIP: "⭐ Service VIP / Senior",
+        srvVIP: "⭐ Service VIP & Institutionnel",
         secDoc: "2. Approchez la CNI / Passeport / QR Code",
         lblWp: "Numéro WhatsApp pour recevoir le ticket:",
         btnSub: "ÉMETTRE LE TICKET ZERO TOUCH"
@@ -147,13 +149,13 @@
         title: "PUERTO DE PRAIA - ENAPOR",
         subtitle: "Quiosco Zero Touch",
         secService: "1. Seleccione el Servicio Portuario",
+        srvPrt: "♿ Prioritario (Movilidad, Embarazadas & Bebés)",
         srvEnc: "📦 Carga y Encomiendas",
         srvPax: "🚢 Pasajeros y Boletos",
         srvTax: "💳 Tasas Portuarias",
         srvPas: "🎫 Pases y Credenciales",
         srvAlf: "🛃 Aduana y Despacho",
-        srvMar: "⚓ Capitanía y Marina",
-        srvVIP: "⭐ Atención VIP / Senior",
+        srvVIP: "⭐ Atención VIP e Institucional",
         secDoc: "2. Acerque su CNI / Pasaporte / QR Code",
         lblWp: "Número de WhatsApp para recibir su turno:",
         btnSub: "EMITIR TURNO ZERO TOUCH"
@@ -162,12 +164,12 @@
         title: "ميناء برايا - إينابور",
         subtitle: "خدمة الأكشاك الذكية",
         secService: "1. اختر الخدمة المينائية",
+        srvPrt: "♿ أولوية خاصة (ذوو الاحتياجات، الحوامل والأطفال)",
         srvEnc: "📦 الشحن والبضائع",
         srvPax: "🚢 الركاب والتذاكر",
         srvTax: "💳 الرسوم المينائية",
         srvPas: "🎫 التصاريح والبطاقات",
         srvAlf: "🛃 التخليص الجمركي",
-        srvMar: "⚓ خفر السواحل والميناء",
         srvVIP: "⭐ خدمة كبار الشخصيات",
         secDoc: "2. تقريب بطاقة الهوية / جواز السفر",
         lblWp: "رقم الواتساب لاستلام التذكرة:",
@@ -177,13 +179,13 @@
         title: "普拉亚港 - ENAPOR",
         subtitle: "零接触自助终端",
         secService: "1. 选择港口服务",
+        srvPrt: "♿ 优先通道（老幼病残孕）",
         srvEnc: "📦 货物与包裹",
         srvPax: "🚢 旅客与售票",
         srvTax: "💳 港口费",
         srvPas: "🎫 通行证与证件",
         srvAlf: "🛃 海关清关",
-        srvMar: "⚓ 港务局与海事",
-        srvVIP: "⭐ VIP 与老年服务",
+        srvVIP: "⭐ VIP 与机构服务",
         secDoc: "2. 请出示身份证 / 护照",
         lblWp: "接收号码的 WhatsApp 电话：",
         btnSub: "生成零接触凭证"
@@ -206,12 +208,12 @@
       document.getElementById('title-main').innerText = t.title;
       document.getElementById('subtitle-main').innerText = t.subtitle;
       document.getElementById('sec-service').innerText = t.secService;
+      document.getElementById('srv-prt').innerText = t.srvPrt;
       document.getElementById('srv-enc').innerText = t.srvEnc;
       document.getElementById('srv-pax').innerText = t.srvPax;
       document.getElementById('srv-tax').innerText = t.srvTax;
       document.getElementById('srv-pas').innerText = t.srvPas;
       document.getElementById('srv-alf').innerText = t.srvAlf;
-      document.getElementById('srv-mar').innerText = t.srvMar;
       document.getElementById('srv-vip').innerText = t.srvVIP;
       document.getElementById('sec-doc').innerText = t.secDoc;
       document.getElementById('lbl-whatsapp').innerText = t.lblWp;
