@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Porto da Praia - Sala de Espera (TV)</title>
+  <style>
+    body { background: #020617; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+    .container { text-align: center; border: 4px solid #38bdf8; padding: 60px; border-radius: 24px; background: #0f172a; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); width: 80%; max-width: 900px; }
+    h2 { color: #94a3b8; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+    #senhaAtual { font-size: 8rem; font-weight: 900; color: #38bdf8; margin: 20px 0; text-shadow: 0 0 20px rgba(56,189,248,0.5); }
+    #balcaoAtual { font-size: 3.5rem; font-weight: 700; color: #10b981; }
+    .footer { margin-top: 40px; color: #64748b; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>SENHA EM ATENDIMENTO</h2>
+    <div id="senhaAtual">---</div>
+    <div id="balcaoAtual">Balcão: ---</div>
+    <div class="footer">ENAPOR - Porto Internacional da Praia | Zero Touch</div>
+  </div>
+  <script>
+    let ultimaSenhaRegistada = '';
+
+    async function verificarEstadoTV() {
+      try {
+        const res = await fetch('/api/estado-tv');
+        const data = await res.json();
+        if (data.ultimaChamada && data.ultimaChamada.senha !== ultimaSenhaRegistada) {
+          ultimaSenhaRegistada = data.ultimaChamada.senha;
+          document.getElementById('senhaAtual').innerText = ultimaSenhaRegistada;
+          document.getElementById('balcaoAtual').innerText = data.ultimaChamada.balcao;
+          falarChamada(ultimaSenhaRegistada, data.ultimaChamada.balcao, data.ultimaChamada.lingua);
+        }
+      } catch (err) { console.error('Erro TV', err); }
+    }
+
+    function falarChamada(senha, balcao, lingua) {
+      if ('speechSynthesis' in window) {
+        let texto = `Senha ${senha}, dirija-se ao ${balcao}`;
+        let lang = 'pt-PT';
+        if (lingua === 'en') { lang = 'en-US'; texto = `Ticket ${senha}, please proceed to ${balcao}`; }
+        else if (lingua === 'fr') { lang = 'fr-FR'; texto = `Ticket ${senha}, veuillez vous présenter au ${balcao}`; }
+        else if (lingua === 'es') { lang = 'es-ES'; texto = `Ticket ${senha}, diríjase al ${balcao}`; }
+        
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = lang;
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+    setInterval(verificarEstadoTV, 3000);
+  </script>
+</body>
+</html>

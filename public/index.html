@@ -28,47 +28,36 @@
   </style>
 </head>
 <body>
-
   <header>
     <h1>PORTO DA PRAIA - ENAPOR</h1>
     <p>Atendimento Quiosque Zero Touch</p>
   </header>
-
   <div class="lang-selector">
     <button class="lang-btn active" onclick="setLang('cv')">Crioulo (CV)</button>
     <button class="lang-btn" onclick="setLang('pt')">Português</button>
     <button class="lang-btn" onclick="setLang('en')">English</button>
     <button class="lang-btn" onclick="setLang('fr')">Français</button>
     <button class="lang-btn" onclick="setLang('es')">Español</button>
-    <button class="lang-btn" onclick="setLang('ar')">العربية</button>
-    <button class="lang-btn" onclick="setLang('zh')">中文</button>
   </div>
-
   <div class="container">
     <div class="section-title">1. Selecione o Serviço / Seleciona Servisu</div>
     <div class="grid-services">
-      <div class="service-card" onclick="selectService(this, 'ENC')">📦 Encomendas / Carga</div>
+      <div class="service-card selected" onclick="selectService(this, 'ENC')">📦 Encomendas / Carga</div>
       <div class="service-card" onclick="selectService(this, 'TAX')">💳 Taxas Portuárias</div>
       <div class="service-card" onclick="selectService(this, 'PAS')">🎫 Passes & Credenciais</div>
-      <div class="service-card" onclick="selectService(this, 'MAR')">🚢 Passagens Marítimas</div>
       <div class="service-card" onclick="selectService(this, 'ALF')">🛃 Despacho Alfandegário</div>
-      <div class="service-card" onclick="selectService(this, 'PRI')">♿ Prioritário / Sénior</div>
     </div>
-
     <div class="section-title">2. Aproxime o CNI / Passaporte / QR Code</div>
     <div class="camera-box">
       <video id="webcam" autoplay playsinline></video>
       <canvas id="canvas" style="display:none;"></canvas>
     </div>
-
     <div class="input-group">
       <label>Número do WhatsApp para Receber a Senha:</label>
-      <input type="tel" id="whatsapp" placeholder="Ex: 2389912345 ou 351912345678">
+      <input type="tel" id="whatsapp" placeholder="Ex: 2389912345">
     </div>
-
     <button class="submit-btn" onclick="processCheckin()">EMITIR SENHA ZERO TOUCH</button>
   </div>
-
   <script>
     let currentLang = 'cv';
     let selectedServiceCode = 'ENC';
@@ -79,51 +68,41 @@
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
         video.srcObject = stream;
-      } catch (err) {
-        console.warn('Câmara indisponível ou permissão negada:', err);
-      }
+      } catch (err) { console.warn('Câmara indisponível', err); }
     }
 
     function setLang(lang) {
       currentLang = lang;
-      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
     }
 
-    function selectService(element, code) {
+    function selectService(el, code) {
       selectedServiceCode = code;
-      document.querySelectorAll('.service-card').forEach(card => card.classList.remove('selected'));
-      element.classList.add('selected');
+      document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
     }
 
     async function processCheckin() {
-      const phone = document.getElementById('whatsapp').value;
+      const whatsapp = document.getElementById('whatsapp').value;
       canvas.width = video.videoWidth || 640;
       canvas.height = video.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageBase64 = canvas.toDataURL('image/jpeg');
-
-      const payload = {
-        language: currentLang,
-        serviceCode: selectedServiceCode,
-        whatsapp: phone,
-        image: imageBase64,
-        timestamp: new Date().toISOString()
-      };
-
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const payload = { serviceCode: selectedServiceCode, language: currentLang, whatsapp, timestamp: new Date().toISOString() };
+      
       try {
-        const res = await fetch('https://api.cvboyrecords.com/webhook/porto-praia-kiosk', {
+        const res = await fetch('/api/checkin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        alert('Pedido enviado com sucesso! Verifique o seu WhatsApp.');
+        const data = await res.json();
+        alert(`Senha emitida com sucesso: ${data.senha}! Verifique o WhatsApp.`);
       } catch (err) {
-        alert('Erro ao enviar pedido para o servidor soberano.');
+        alert('Erro ao processar senha no quiosque.');
       }
     }
-
     initCamera();
   </script>
 </body>

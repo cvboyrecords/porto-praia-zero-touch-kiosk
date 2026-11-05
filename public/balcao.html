@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Porto da Praia - Painel do Balcão</title>
+  <style>
+    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .card { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; width: 420px; border: 2px solid #334155; }
+    h1 { color: #38bdf8; margin-bottom: 20px; font-size: 1.8rem; }
+    select, button { width: 100%; padding: 15px; margin-top: 15px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: bold; }
+    select { background: #0f172a; color: #fff; border: 2px solid #334155; }
+    button { background: #10b981; color: white; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #059669; }
+    #resultado { margin-top: 20px; font-size: 1.3rem; color: #38bdf8; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>BALCÃO ENAPOR</h1>
+    <label>Selecione o seu Balcão:</label>
+    <select id="balcaoSelect">
+      <option value="Balcão 01">Balcão 01 - Encomendas</option>
+      <option value="Balcão 02">Balcão 02 - Taxas & Licenças</option>
+      <option value="Balcão 03">Balcão 03 - Alfândega / Prioritário</option>
+    </select>
+    <button onclick="chamarProximo()">CHAMAR PRÓXIMO CIDADÃO</button>
+    <div id="resultado">Aguardando ação...</div>
+  </div>
+  <script>
+    async function chamarProximo() {
+      const balcao = document.getElementById('balcaoSelect').value;
+      try {
+        const res = await fetch('/api/chamar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ balcao })
+        });
+        const data = await res.json();
+        if(data.status === 'success') {
+          document.getElementById('resultado').innerText = `Chamado: ${data.chamado.senha} para ${data.chamado.balcao}`;
+        } else {
+          document.getElementById('resultado').innerText = data.message;
+        }
+      } catch (err) {
+        document.getElementById('resultado').innerText = 'Erro de ligação.';
+      }
+    }
+  </script>
+</body>
+</html>
