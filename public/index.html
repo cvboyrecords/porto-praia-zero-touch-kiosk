@@ -13,21 +13,21 @@
     .lang-selector { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 25px; }
     .lang-btn { background: #1e293b; border: 2px solid #334155; color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: all 0.2s; }
     .lang-btn.active, .lang-btn:hover { background: #0284c7; border-color: #38bdf8; }
-    .container { width: 100%; max-width: 900px; background: #1e293b; border-radius: 16px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .container { width: 100%; max-width: 950px; background: #1e293b; border-radius: 16px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
     .section-title { font-size: 1.3rem; margin-bottom: 15px; color: #e2e8f0; border-bottom: 2px solid #334155; padding-bottom: 8px; }
-    .grid-services { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-    .service-card { background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 1.1rem; font-weight: 600; }
+    .grid-services { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 25px; }
+    .service-card { background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 1rem; font-weight: 600; }
     .service-card:hover, .service-card.selected { border-color: #38bdf8; background: #0369a1; }
     .camera-box { text-align: center; margin-bottom: 25px; }
-    video { width: 100%; max-width: 480px; height: 270px; background: #000; border-radius: 12px; border: 2px solid #334155; object-fit: cover; }
+    video { width: 100%; max-width: 480px; height: 250px; background: #000; border-radius: 12px; border: 2px solid #334155; object-fit: cover; }
     .input-group { margin-bottom: 25px; }
     .input-group label { display: block; margin-bottom: 8px; color: #94a3b8; font-size: 1rem; }
     .input-group input { width: 100%; padding: 14px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; color: #fff; font-size: 1.1rem; }
     .submit-btn { width: 100%; padding: 18px; background: #10b981; border: none; border-radius: 12px; color: #fff; font-size: 1.4rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
     .submit-btn:hover { background: #059669; }
-    .nav-links { margin-top: 30px; display: flex; gap: 20px; justify-content: center; }
-    .nav-links a { color: #38bdf8; text-decoration: none; font-weight: bold; font-size: 1rem; background: #1e293b; padding: 10px 20px; border-radius: 8px; border: 1px solid #334155; }
-    .nav-links a:hover { background: #334155; }
+    .secret-admin { margin-top: 35px; text-align: center; border-top: 1px dashed #334155; padding-top: 15px; }
+    .secret-admin button { background: transparent; border: none; color: #475569; font-size: 0.85rem; cursor: pointer; }
+    .secret-admin button:hover { color: #94a3b8; }
   </style>
 </head>
 <body>
@@ -47,12 +47,15 @@
   </div>
 
   <div class="container">
-    <div class="section-title" id="sec-service">1. Selecione o Serviço</div>
+    <div class="section-title" id="sec-service">1. Selecione o Serviço Portuário</div>
     <div class="grid-services">
-      <div class="service-card selected" onclick="selectService(this, 'ENC')" id="srv-enc">📦 Encomendas / Carga</div>
+      <div class="service-card selected" onclick="selectService(this, 'ENC')" id="srv-enc">📦 Carga & Encomendas</div>
+      <div class="service-card" onclick="selectService(this, 'PAX')" id="srv-pax">🚢 Passageiros & Bilhética</div>
       <div class="service-card" onclick="selectService(this, 'TAX')" id="srv-tax">💳 Taxas Portuárias</div>
       <div class="service-card" onclick="selectService(this, 'PAS')" id="srv-pas">🎫 Passes & Credenciais</div>
-      <div class="service-card" onclick="selectService(this, 'ALF')" id="srv-alf">🛃 Despacho Alfandegário</div>
+      <div class="service-card" onclick="selectService(this, 'ALF')" id="srv-alf">🛃 Alfândega & Despacho</div>
+      <div class="service-card" onclick="selectService(this, 'MAR')" id="srv-mar">⚓ Capitania & Marinha</div>
+      <div class="service-card" onclick="selectService(this, 'VIP')" id="srv-vip">⭐ Atendimento VIP / Sénior</div>
     </div>
 
     <div class="section-title" id="sec-doc">2. Aproxime o CNI / Passaporte / QR Code</div>
@@ -67,11 +70,10 @@
     </div>
 
     <button class="submit-btn" id="btn-submit" onclick="processCheckin()">EMITIR SENHA ZERO TOUCH</button>
-  </div>
 
-  <div class="nav-links">
-    <a href="/balcao" target="_blank" id="link-balcao">🖥️ Aceder Painel do Funcionário (Balcão)</a>
-    <a href="/tv" target="_blank" id="link-tv">📺 Aceder Ecrã da TV (Sala de Espera)</a>
+    <div class="secret-admin">
+      <button onclick="acessoAdmin()">🔐 Acesso Administrativo Restrito</button>
+    </div>
   </div>
 
   <script>
@@ -84,100 +86,107 @@
       cv: {
         title: "PORTO DA PRAIA - ENAPOR",
         subtitle: "Atendimentu Kiosku Zero Touch",
-        secService: "1. Disbulta Servisu",
-        srvEnc: "📦 Encomendas / Karga",
+        secService: "1. Disbulta Servisu Portuáriu",
+        srvEnc: "📦 Karga & Encomendas",
+        srvPax: "🚢 Passageirus & Bilhétika",
         srvTax: "💳 Tasas Portuárias",
         srvPas: "🎫 Passes & Kredenciais",
-        srvAlf: "🛃 Dispaxu Alfandegáriu",
+        srvAlf: "🛃 Alfândega & Dispaxu",
+        srvMar: "⚓ Kapitania & Marinha",
+        srvVIP: "⭐ Atendimentu VIP / Sénior",
         secDoc: "2. Aproxima CNI / Passaporti / QR Code",
         lblWp: "Número di WhatsApp pa Resebi Senha:",
-        btnSub: "EMITIR SENHA ZERO TOUCH",
-        linkBalcao: "🖥️ Painel di Funsionáriu",
-        linkTv: "📺 Ecrã di TV (Sala di Spera)"
+        btnSub: "EMITIR SENHA ZERO TOUCH"
       },
       pt: {
         title: "PORTO DA PRAIA - ENAPOR",
         subtitle: "Atendimento Quiosque Zero Touch",
-        secService: "1. Selecione o Serviço",
-        srvEnc: "📦 Encomendas / Carga",
+        secService: "1. Selecione o Serviço Portuário",
+        srvEnc: "📦 Carga & Encomendas",
+        srvPax: "🚢 Passageiros & Bilhética",
         srvTax: "💳 Taxas Portuárias",
         srvPas: "🎫 Passes & Credenciais",
-        srvAlf: "🛃 Despacho Alfandegário",
+        srvAlf: "🛃 Alfândega & Despacho",
+        srvMar: "⚓ Capitania & Marinha",
+        srvVIP: "⭐ Atendimento VIP / Sénior",
         secDoc: "2. Aproxime o CNI / Passaporte / QR Code",
         lblWp: "Número do WhatsApp para Receber a Senha:",
-        btnSub: "EMITIR SENHA ZERO TOUCH",
-        linkBalcao: "🖥️ Painel do Funcionário",
-        linkTv: "📺 Ecrã da TV (Sala de Espera)"
+        btnSub: "EMITIR SENHA ZERO TOUCH"
       },
       en: {
         title: "PORT OF PRAIA - ENAPOR",
         subtitle: "Zero Touch Kiosk Service",
-        secService: "1. Select Service",
-        srvEnc: "📦 Cargo / Parcels",
+        secService: "1. Select Port Service",
+        srvEnc: "📦 Cargo & Parcels",
+        srvPax: "🚢 Passengers & Ticketing",
         srvTax: "💳 Port Fees",
         srvPas: "🎫 Passes & Badges",
         srvAlf: "🛃 Customs Clearance",
+        srvMar: "⚓ Harbor Master & Marine",
+        srvVIP: "⭐ VIP & Senior Service",
         secDoc: "2. Scan ID / Passport / QR Code",
         lblWp: "WhatsApp Number to Receive Ticket:",
-        btnSub: "ISSUE ZERO TOUCH TICKET",
-        linkBalcao: "🖥️ Staff Counter Panel",
-        linkTv: "📺 Waiting Room TV Screen"
+        btnSub: "ISSUE ZERO TOUCH TICKET"
       },
       fr: {
         title: "PORT DE PRAIA - ENAPOR",
         subtitle: "Guichet Zero Touch",
-        secService: "1. Sélectionnez le Service",
-        srvEnc: "📦 Colis / Fret",
+        secService: "1. Sélectionnez le Service Portuaire",
+        srvEnc: "📦 Fret & Colis",
+        srvPax: "🚢 Passagers & Billetterie",
         srvTax: "💳 Taxes Portuaires",
         srvPas: "🎫 Badges & Passes",
         srvAlf: "🛃 Dédouanement",
+        srvMar: "⚓ Capitainerie & Marine",
+        srvVIP: "⭐ Service VIP / Senior",
         secDoc: "2. Approchez la CNI / Passeport / QR Code",
         lblWp: "Numéro WhatsApp pour recevoir le ticket:",
-        btnSub: "ÉMETTRE LE TICKET ZERO TOUCH",
-        linkBalcao: "🖥️ Panneau Agent (Guichet)",
-        linkTv: "📺 Écran TV Salle d'Attente"
+        btnSub: "ÉMETTRE LE TICKET ZERO TOUCH"
       },
       es: {
         title: "PUERTO DE PRAIA - ENAPOR",
         subtitle: "Quiosco Zero Touch",
-        secService: "1. Seleccione el Servicio",
-        srvEnc: "📦 Encomiendas / Carga",
+        secService: "1. Seleccione el Servicio Portuario",
+        srvEnc: "📦 Carga y Encomiendas",
+        srvPax: "🚢 Pasajeros y Boletos",
         srvTax: "💳 Tasas Portuarias",
         srvPas: "🎫 Pases y Credenciales",
-        srvAlf: "🛃 Despacho Aduanero",
+        srvAlf: "🛃 Aduana y Despacho",
+        srvMar: "⚓ Capitanía y Marina",
+        srvVIP: "⭐ Atención VIP / Senior",
         secDoc: "2. Acerque su CNI / Pasaporte / QR Code",
         lblWp: "Número de WhatsApp para recibir su turno:",
-        btnSub: "EMITIR TURNO ZERO TOUCH",
-        linkBalcao: "🖥️ Panel de Funcionario",
-        linkTv: "📺 Pantalla de TV (Sala de Espera)"
+        btnSub: "EMITIR TURNO ZERO TOUCH"
       },
       ar: {
         title: "ميناء برايا - إينابور",
         subtitle: "خدمة الأكشاك الذكية",
-        secService: "1. اختر الخدمة",
+        secService: "1. اختر الخدمة المينائية",
         srvEnc: "📦 الشحن والبضائع",
+        srvPax: "🚢 الركاب والتذاكر",
         srvTax: "💳 الرسوم المينائية",
         srvPas: "🎫 التصاريح والبطاقات",
         srvAlf: "🛃 التخليص الجمركي",
+        srvMar: "⚓ خفر السواحل والميناء",
+        srvVIP: "⭐ خدمة كبار الشخصيات",
         secDoc: "2. تقريب بطاقة الهوية / جواز السفر",
         lblWp: "رقم الواتساب لاستلام التذكرة:",
-        btnSub: "إصدار التذكرة الذكية",
-        linkBalcao: "🖥️ لوحة موظف الاستقبال",
-        linkTv: "📺 شاشة تلفزيون الانتظار"
+        btnSub: "إصدار التذكرة الذكية"
       },
       zh: {
         title: "普拉亚港 - ENAPOR",
         subtitle: "零接触自助终端",
-        secService: "1. 选择服务",
-        srvEnc: "📦 货物 / 包裹",
+        secService: "1. 选择港口服务",
+        srvEnc: "📦 货物与包裹",
+        srvPax: "🚢 旅客与售票",
         srvTax: "💳 港口费",
         srvPas: "🎫 通行证与证件",
         srvAlf: "🛃 海关清关",
+        srvMar: "⚓ 港务局与海事",
+        srvVIP: "⭐ VIP 与老年服务",
         secDoc: "2. 请出示身份证 / 护照",
         lblWp: "接收号码的 WhatsApp 电话：",
-        btnSub: "生成零接触凭证",
-        linkBalcao: "🖥️ 柜台员工面板",
-        linkTv: "📺 等候室电视屏幕"
+        btnSub: "生成零接触凭证"
       }
     };
 
@@ -198,20 +207,32 @@
       document.getElementById('subtitle-main').innerText = t.subtitle;
       document.getElementById('sec-service').innerText = t.secService;
       document.getElementById('srv-enc').innerText = t.srvEnc;
+      document.getElementById('srv-pax').innerText = t.srvPax;
       document.getElementById('srv-tax').innerText = t.srvTax;
       document.getElementById('srv-pas').innerText = t.srvPas;
       document.getElementById('srv-alf').innerText = t.srvAlf;
+      document.getElementById('srv-mar').innerText = t.srvMar;
+      document.getElementById('srv-vip').innerText = t.srvVIP;
       document.getElementById('sec-doc').innerText = t.secDoc;
       document.getElementById('lbl-whatsapp').innerText = t.lblWp;
       document.getElementById('btn-submit').innerText = t.btnSub;
-      document.getElementById('link-balcao').innerText = t.linkBalcao;
-      document.getElementById('link-tv').innerText = t.linkTv;
     }
 
     function selectService(el, code) {
       selectedServiceCode = code;
       document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
       el.classList.add('selected');
+    }
+
+    function acessoAdmin() {
+      const pin = prompt("Introduza o PIN de Administrador ENAPOR:");
+      if (pin === "2026") {
+        const opcao = prompt("Escolha o destino:\n1 - Painel do Balcão (/balcao)\n2 - Ecrã da TV (/tv)");
+        if (opcao === "1") window.open('/balcao', '_blank');
+        else if (opcao === "2") window.open('/tv', '_blank');
+      } else if (pin !== null) {
+        alert("PIN Incorreto!");
+      }
     }
 
     async function processCheckin() {
