@@ -30,6 +30,8 @@
           ultimaSenhaRegistada = data.ultimaChamada.senha;
           document.getElementById('senhaAtual').innerText = ultimaSenhaRegistada;
           document.getElementById('balcaoAtual').innerText = data.ultimaChamada.balcao;
+          
+          // Voz sintética automática a falar na língua exata escolhida pelo cliente!
           falarChamada(ultimaSenhaRegistada, data.ultimaChamada.balcao, data.ultimaChamada.lingua);
         }
       } catch (err) { console.error('Erro TV', err); }
@@ -39,10 +41,14 @@
       if ('speechSynthesis' in window) {
         let texto = `Senha ${senha}, dirija-se ao ${balcao}`;
         let lang = 'pt-PT';
+
         if (lingua === 'en') { lang = 'en-US'; texto = `Ticket ${senha}, please proceed to ${balcao}`; }
         else if (lingua === 'fr') { lang = 'fr-FR'; texto = `Ticket ${senha}, veuillez vous présenter au ${balcao}`; }
-        else if (lingua === 'es') { lang = 'es-ES'; texto = `Ticket ${senha}, diríjase al ${balcao}`; }
-        
+        else if (lingua === 'es') { lang = 'es-ES'; texto = `Ticket ${senha}, por favor diríjase al ${balcao}`; }
+        else if (lingua === 'ar') { lang = 'ar-SA'; texto = `التذكرة ${senha}، يرجى التوجه إلى ${balcao}`; }
+        else if (lingua === 'zh') { lang = 'zh-CN'; texto = `请凭凭证 ${senha} 前往 ${balcao}`; }
+        else if (lingua === 'cv') { lang = 'pt-PT'; texto = `Senha ${senha}, bai pa ${balcao}`; }
+
         const utterance = new SpeechSynthesisUtterance(texto);
         utterance.lang = lang;
         utterance.rate = 0.9;

@@ -5,7 +5,7 @@
   <title>Porto da Praia - Painel do Balcão</title>
   <style>
     body { background: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-    .card { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; width: 420px; border: 2px solid #334155; }
+    .card { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; width: 450px; border: 2px solid #334155; }
     h1 { color: #38bdf8; margin-bottom: 20px; font-size: 1.8rem; }
     select, button { width: 100%; padding: 15px; margin-top: 15px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: bold; }
     select { background: #0f172a; color: #fff; border: 2px solid #334155; }
@@ -19,11 +19,13 @@
     <h1>BALCÃO ENAPOR</h1>
     <label>Selecione o seu Balcão:</label>
     <select id="balcaoSelect">
-      <option value="Balcão 01">Balcão 01 - Carga & Encomendas</option>
-      <option value="Balcão 02">Balcão 02 - Passageiros & Bilhética</option>
-      <option value="Balcão 03">Balcão 03 - Taxas Portuárias</option>
-      <option value="Balcão 04">Balcão 04 - Passes & Credenciais</option>
-      <option value="Balcão 05">Balcão 05 - Alfândega / Prioritário</option>
+      <option value="Balcão 01">Balcão 01 - Prioritário (Mobilidade & Grávidas)</option>
+      <option value="Balcão 02">Balcão 02 - Carga & Encomendas</option>
+      <option value="Balcão 03">Balcão 03 - Passageiros & Bilhética</option>
+      <option value="Balcão 04">Balcão 04 - Taxas Portuárias</option>
+      <option value="Balcão 05">Balcão 05 - Passes & Credenciais</option>
+      <option value="Balcão 06">Balcão 06 - Alfândega & Despacho</option>
+      <option value="Balcão 07">Balcão 07 - VIP & Institucional</option>
     </select>
     <button onclick="chamarProximo()">CHAMAR PRÓXIMO CIDADÃO</button>
     <div id="resultado">Aguardando ação...</div>
