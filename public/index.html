@@ -21,8 +21,11 @@
     .service-card:hover, .service-card.selected { border-color: #38bdf8; background: #0369a1; }
     .service-card.priority { border-color: #f59e0b; background: #451a03; color: #fde68a; }
     .service-card.priority:hover, .service-card.priority.selected { background: #78350f; border-color: #fbbf24; }
-    .camera-box { text-align: center; margin-bottom: 20px; }
+    .camera-box { text-align: center; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
     video { width: 100%; max-width: 420px; height: 220px; background: #000; border-radius: 10px; border: 2px solid #334155; object-fit: cover; }
+    .scan-btn { background: #0284c7; border: none; color: #fff; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 8px; }
+    .scan-btn:hover { background: #0369a1; }
+    .scan-status { font-size: 0.9rem; color: #38bdf8; font-weight: 600; min-height: 20px; }
     .input-group { margin-bottom: 20px; }
     .input-group label { display: block; margin-bottom: 6px; color: #94a3b8; font-size: 0.95rem; }
     .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; color: #fff; font-size: 1rem; }
@@ -62,6 +65,8 @@
     <div class="section-title" id="sec-doc">2. Aproxime o CNI / Passaporte / QR Code</div>
     <div class="camera-box">
       <video id="webcam" autoplay playsinline></video>
+      <button class="scan-btn" id="btn-scan" onclick="capturarDocumento()">📸 Scan ID / Capturar Documento</button>
+      <div class="scan-status" id="scan-status">Aguardando posicionamento do documento...</div>
       <canvas id="canvas" style="display:none;"></canvas>
     </div>
 
@@ -77,6 +82,7 @@
     let currentLang = 'cv';
     let selectedServiceCode = 'PRT';
     let adminClicks = 0;
+    let documentoCapturado = false;
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('canvas');
 
@@ -96,6 +102,9 @@
         srvPax: "🚢 Passageirus & Bilhétika", srvTax: "💳 Tasas Portuárias",
         srvPas: "🎫 Passes & Kredenciais", srvAlf: "🛃 Alfândega & Dispaxu",
         srvVIP: "⭐ Atendimentu VIP & Institusional", secDoc: "2. Aproxima CNI / Passaporti / QR Code",
+        scanBtn: "📸 Scan ID / Captura Documentu",
+        scanWait: "Spera, aproxima dokumentu y kika...",
+        scanDone: "✅ CNI / Passaporti Capturado ku Sucessu!",
         lblWp: "Número di WhatsApp pa Resebi Senha:", btnSub: "EMITIR SENHA ZERO TOUCH"
       },
       pt: {
@@ -105,6 +114,9 @@
         srvPax: "🚢 Passageiros & Bilhética", srvTax: "💳 Taxas Portuárias",
         srvPas: "🎫 Passes & Credenciais", srvAlf: "🛃 Alfândega & Despacho",
         srvVIP: "⭐ Atendimento VIP & Institucional", secDoc: "2. Aproxime o CNI / Passaporte / QR Code",
+        scanBtn: "📸 Scan ID / Capturar Documento",
+        scanWait: "Aguardando posicionamento do documento...",
+        scanDone: "✅ CNI / Passaporte Capturado com Sucesso!",
         lblWp: "Número do WhatsApp para Receber a Senha:", btnSub: "EMITIR SENHA ZERO TOUCH"
       },
       en: {
@@ -114,6 +126,9 @@
         srvPax: "🚢 Passengers & Ticketing", srvTax: "💳 Port Fees",
         srvPas: "🎫 Passes & Badges", srvAlf: "🛃 Customs Clearance",
         srvVIP: "⭐ VIP & Institutional Service", secDoc: "2. Scan ID / Passport / QR Code",
+        scanBtn: "📸 Scan ID / Capture Document",
+        scanWait: "Waiting for document positioning...",
+        scanDone: "✅ ID / Passport Captured Successfully!",
         lblWp: "WhatsApp Number to Receive Ticket:", btnSub: "ISSUE ZERO TOUCH TICKET"
       },
       fr: {
@@ -123,6 +138,9 @@
         srvPax: "🚢 Passagers & Billetterie", srvTax: "💳 Taxes Portuaires",
         srvPas: "🎫 Badges & Passes", srvAlf: "🛃 Dédouanement",
         srvVIP: "⭐ Service VIP & Institutionnel", secDoc: "2. Approchez la CNI / Passeport / QR Code",
+        scanBtn: "📸 Scan ID / Capturer le Document",
+        scanWait: "En attente du positionnement du document...",
+        scanDone: "✅ CNI / Passeport Capturé avec Succès !",
         lblWp: "Numéro WhatsApp pour recevoir le ticket:", btnSub: "ÉMETTRE LE TICKET ZERO TOUCH"
       },
       es: {
@@ -132,6 +150,9 @@
         srvPax: "🚢 Pasajeros y Boletos", srvTax: "💳 Tasas Portuarias",
         srvPas: "🎫 Pases y Credenciales", srvAlf: "🛃 Aduana y Despacho",
         srvVIP: "⭐ Atención VIP e Institucional", secDoc: "2. Acerque su CNI / Pasaporte / QR Code",
+        scanBtn: "📸 Scan ID / Capturar Documento",
+        scanWait: "Esperando posicionamiento del documento...",
+        scanDone: "✅ CNI / Pasaporte Capturado con Éxito!",
         lblWp: "Número de WhatsApp para recibir su turno:", btnSub: "EMITIR TURNO ZERO TOUCH"
       },
       ar: {
@@ -141,6 +162,9 @@
         srvPax: "🚢 الركاب والتذاكر", srvTax: "💳 الرسوم المينائية",
         srvPas: "🎫 التصاريح والبطاقات", srvAlf: "🛃 التخليص الجمركي",
         srvVIP: "⭐ خدمة كبار الشخصيات", secDoc: "2. تقريب بطاقة الهوية / جواز السفر",
+        scanBtn: "📸 مسح الهوية / التقاط المستند",
+        scanWait: "في انتظار وضع المستند...",
+        scanDone: "✅ تم التقاط المستند بنجاح!",
         lblWp: "رقم الواتساب لاستلام التذكرة:", btnSub: "إصدار التذكرة الذكية"
       },
       zh: {
@@ -150,6 +174,9 @@
         srvPax: "🚢 旅客与售票", srvTax: "💳 港口费",
         srvPas: "🎫 通行证与证件", srvAlf: "🛃 海关清关",
         srvVIP: "⭐ VIP 与机构服务", secDoc: "2. 请出示身份证 / 护照",
+        scanBtn: "📸 扫描身份证 / 捕获文件",
+        scanWait: "等待放置证件...",
+        scanDone: "✅ 证件捕获成功！",
         lblWp: "接收号码的 WhatsApp 电话：", btnSub: "生成零接触凭证"
       }
     };
@@ -178,14 +205,34 @@
       document.getElementById('srv-alf').innerText = t.srvAlf;
       document.getElementById('srv-vip').innerText = t.srvVIP;
       document.getElementById('sec-doc').innerText = t.secDoc;
+      document.getElementById('btn-scan').innerText = t.scanBtn;
+      document.getElementById('scan-status').innerText = document.getElementById('scan-status').dataset.scanned ? (document.getElementById('scan-status').dataset.scanned === 'true' ? t.scanDone : t.scanWait) : t.scanWait;
       document.getElementById('lbl-whatsapp').innerText = t.lblWp;
       document.getElementById('btn-submit').innerText = t.btnSub;
+
+      if (lang === 'ar') {
+        document.body.style.direction = 'rtl';
+      } else {
+        document.body.style.direction = 'ltr';
+      }
     }
 
     function selectService(el, code) {
       selectedServiceCode = code;
       document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
       el.classList.add('selected');
+    }
+
+    function capturarDocumento() {
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      documentumentoCapturado = true;
+      
+      const t = i18n[currentLang];
+      const statusEl = document.getElementById('scan-status');
+      statusEl.innerText = t.scanDone;
+      statusEl.dataset.scanned = 'true';
     }
 
     function triggerAdminSecret() {
@@ -206,10 +253,6 @@
 
     async function processCheckin() {
       const whatsapp = document.getElementById('whatsapp').value;
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
-      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-      
       const payload = { serviceCode: selectedServiceCode, language: currentLang, whatsapp, timestamp: new Date().toISOString() };
       
       try {
