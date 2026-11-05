@@ -24,8 +24,11 @@ app.get('/tv', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tv.html'));
 });
 
+// API de Check-in rigorosa com Fuso Horário de Cabo Verde (Atlantic/Cape_Verde)
 app.post('/api/checkin', (req, res) => {
   const { serviceCode, language, whatsapp } = req.body;
+  
+  // Fuso horário oficial de Cabo Verde aplicado diretamente no servidor
   const dataCV = new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Cape_Verde' });
   const timestampCV = new Date(dataCV).toISOString();
   const senhaGerada = `${serviceCode}-${Math.floor(100 + Math.random() * 900)}`;
@@ -39,7 +42,7 @@ app.post('/api/checkin', (req, res) => {
     estado: 'AGUARDANDO'
   });
 
-  res.json({ status: 'success', senha: senhaGerada, timestamp: timestampCV });
+  res.json({ status: 'success', senha: senhaGerada, timestamp: timestampCV, fuso: 'Atlantic/Cape_Verde' });
 });
 
 app.post('/api/chamar', (req, res) => {
@@ -66,5 +69,5 @@ app.get('/api/estado-tv', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[PORTO DA PRAIA] Servidor unificado ativo na porta ${PORT}`);
+  console.log(`[PORTO DA PRAIA] Servidor unificado ativo na porta ${PORT} (Fuso: Atlantic/Cape_Verde)`);
 });

@@ -137,7 +137,7 @@
         srvPax: "🚢 الركاب والتذاكر", srvTax: "💳 الرسوم المينائية",
         srvPas: "🎫 التصاريح والبطاقات", srvAlf: "🛃 التخليص الجمركي",
         srvVIP: "⭐ خدمة كبار الشخصيات", secDoc: "2. تقريب بطاقة الهوية / جواز السفر",
-        lblWp: "رقم الواتساب لاستلاستلام التذكرة:", btnSub: "إصدار التذكرة الذكية"
+        lblWp: "رقم الواتساب لاستلام التذكرة:", btnSub: "إصدار التذكرة الذكية"
       },
       zh: {
         title: "普拉亚港 - ENAPOR", subtitle: "零接触自助终端",
@@ -160,9 +160,7 @@
     function setLang(lang) {
       currentLang = lang;
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-      
-      // Encontrar o botão clicado e marcar como ativo
-      event.currentTarget.classList.add('active');
+      event.target.classList.add('active');
 
       const t = i18n[lang];
       document.getElementById('title-main').innerText = t.title;
