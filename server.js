@@ -24,11 +24,10 @@ app.get('/tv', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tv.html'));
 });
 
-// API de Check-in rigorosa com Fuso Horário de Cabo Verde (Atlantic/Cape_Verde)
+// Check-in com fuso horário estrito de Cabo Verde (Atlantic/Cape_Verde)
 app.post('/api/checkin', (req, res) => {
   const { serviceCode, language, whatsapp } = req.body;
   
-  // Fuso horário oficial de Cabo Verde aplicado diretamente no servidor
   const dataCV = new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Cape_Verde' });
   const timestampCV = new Date(dataCV).toISOString();
   const senhaGerada = `${serviceCode}-${Math.floor(100 + Math.random() * 900)}`;

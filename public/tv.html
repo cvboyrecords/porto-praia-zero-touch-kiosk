@@ -2,39 +2,76 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Porto da Praia - Sala de Espera (TV)</title>
   <style>
-    body { background: #020617; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-    .container { text-align: center; border: 4px solid #38bdf8; padding: 60px; border-radius: 24px; background: #0f172a; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); width: 80%; max-width: 900px; }
-    h2 { color: #94a3b8; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-    #senhaAtual { font-size: 8rem; font-weight: 900; color: #38bdf8; margin: 20px 0; text-shadow: 0 0 20px rgba(56,189,248,0.5); }
-    #balcaoAtual { font-size: 3.5rem; font-weight: 700; color: #10b981; }
-    .footer { margin-top: 40px; color: #64748b; font-size: 1.2rem; }
+    body { background: #020617; color: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+    .container { text-align: center; border: 4px solid #38bdf8; padding: 50px; border-radius: 24px; background: #0f172a; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); width: 85%; max-width: 950px; }
+    h2 { color: #94a3b8; font-size: clamp(1.8rem, 4vw, 2.8rem); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; }
+    #senhaAtual { font-size: clamp(5rem, 15vw, 9rem); font-weight: 900; color: #38bdf8; margin: 20px 0; text-shadow: 0 0 25px rgba(56,189,248,0.5); }
+    #balcaoAtual { font-size: clamp(2rem, 5vw, 3.8rem); font-weight: 700; color: #10b981; }
+    .footer { margin-top: 35px; color: #64748b; font-size: clamp(1rem, 2vw, 1.3rem); }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>SENHA EM ATENDIMENTO</h2>
+    <h2 id="tv-title">SENHA EM ATENDIMENTO</h2>
     <div id="senhaAtual">---</div>
     <div id="balcaoAtual">Balcão: ---</div>
-    <div class="footer">ENAPOR - Porto Internacional da Praia | Zero Touch</div>
+    <div class="footer" id="tv-footer">ENAPOR - Porto Internacional da Praia | Zero Touch</div>
   </div>
+
   <script>
     let ultimaSenhaRegistada = '';
+
+    const i18nTV = {
+      cv: { title: "SENHA NA ATENDIMENTU", footer: "ENAPOR - Portu Internacional di Praia" },
+      pt: { title: "SENHA EM ATENDIMENTO", footer: "ENAPOR - Porto Internacional da Praia | Zero Touch" },
+      en: { title: "NOW SERVING TICKET", footer: "ENAPOR - Port of Praia International" },
+      fr: { title: "TICKET EN COURS DE SERVICE", footer: "ENAPOR - Port International de Praia" },
+      es: { title: "TURNO EN ATENCIÓN", footer: "ENAPOR - Puerto Internacional de Praia" },
+      ar: { title: "التذكرة قيد الخدمة حاليا", footer: "ميناء برايا الدولي - إينابور", rtl: true },
+      zh: { title: "当前服务号码", footer: "ENAPOR - 普拉亚国际港口" }
+    };
 
     async function verificarEstadoTV() {
       try {
         const res = await fetch('/api/estado-tv');
         const data = await res.json();
+        
         if (data.ultimaChamada && data.ultimaChamada.senha !== ultimaSenhaRegistada) {
           ultimaSenhaRegistada = data.ultimaChamada.senha;
+          const lingua = data.ultimaChamada.lingua || 'pt';
+          
+          // Aplicar caligrafia e tradução de acordo com a língua escolhida pelo cliente
+          aplicarEstiloETextoLingua(lingua, data.ultimaChamada.balcao);
+          
           document.getElementById('senhaAtual').innerText = ultimaSenhaRegistada;
           document.getElementById('balcaoAtual').innerText = data.ultimaChamada.balcao;
           
-          // Voz sintética automática a falar na língua exata escolhida pelo cliente!
-          falarChamada(ultimaSenhaRegistada, data.ultimaChamada.balcao, data.ultimaChamada.lingua);
+          // Falar em voz alta na língua correta
+          falarChamada(ultimaSenhaRegistada, data.ultimaChamada.balcao, lingua);
         }
       } catch (err) { console.error('Erro TV', err); }
+    }
+
+    function aplicarEstiloETextoLingua(lingua, balcao) {
+      const conf = i18nTV[lingua] || i18nTV['pt'];
+      
+      document.getElementById('tv-title').innerText = conf.title;
+      document.getElementById('tv-footer').innerText = conf.footer;
+
+      // Ajustar caligrafia e alinhamento para Árabe (RTL) ou Chinês (Fontes asiáticas)
+      if (conf.rtl) {
+        document.body.style.direction = 'rtl';
+        document.body.style.fontFamily = "'Amiri', 'Segoe UI', Tahoma, sans-serif";
+      } else if (lingua === 'zh') {
+        document.body.style.direction = 'ltr';
+        document.body.style.fontFamily = "'Microsoft YaHei', sans-serif";
+      } else {
+        document.body.style.direction = 'ltr';
+        document.body.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+      }
     }
 
     function falarChamada(senha, balcao, lingua) {
@@ -55,6 +92,7 @@
         window.speechSynthesis.speak(utterance);
       }
     }
+
     setInterval(verificarEstadoTV, 3000);
   </script>
 </body>
