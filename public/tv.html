@@ -43,25 +43,22 @@
           ultimaSenhaRegistada = data.ultimaChamada.senha;
           const lingua = data.ultimaChamada.lingua || 'pt';
           
-          // Aplicar caligrafia e tradução de acordo com a língua escolhida pelo cliente
-          aplicarEstiloETextoLingua(lingua, data.ultimaChamada.balcao);
+          aplicarEstiloETextoLingua(lingua);
           
           document.getElementById('senhaAtual').innerText = ultimaSenhaRegistada;
           document.getElementById('balcaoAtual').innerText = data.ultimaChamada.balcao;
           
-          // Falar em voz alta na língua correta
           falarChamada(ultimaSenhaRegistada, data.ultimaChamada.balcao, lingua);
         }
       } catch (err) { console.error('Erro TV', err); }
     }
 
-    function aplicarEstiloETextoLingua(lingua, balcao) {
+    function aplicarEstiloETextoLingua(lingua) {
       const conf = i18nTV[lingua] || i18nTV['pt'];
       
       document.getElementById('tv-title').innerText = conf.title;
       document.getElementById('tv-footer').innerText = conf.footer;
 
-      // Ajustar caligrafia e alinhamento para Árabe (RTL) ou Chinês (Fontes asiáticas)
       if (conf.rtl) {
         document.body.style.direction = 'rtl';
         document.body.style.fontFamily = "'Amiri', 'Segoe UI', Tahoma, sans-serif";
